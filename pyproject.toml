@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "python-django-diploma"
+version = "0.1.0"
+description = ""
+authors = ["Svetlana <aprielskaya@gmail.com>"]
+readme = "README.md"
+packages = [{include = "python_django_diploma"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^4.2.2"
+python-dotenv = "^1.0.0"
+pillow = "^9.5.0"
+djangorestframework = "^3.14.0"
+pre-commit = "^3.3.3"
+black = "^23.3.0"
+django-request-logging = "^0.7.5"
+requests = "^2.31.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
