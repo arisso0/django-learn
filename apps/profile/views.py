@@ -38,6 +38,7 @@ log = logging.getLogger(__name__)
 
 @api_view(["POST"])
 def login_view(request):
+    """Аутентификация (вход)"""
     auth_dict = json.loads(list(request.POST.dict().keys())[0])
     username = auth_dict.get("username")
     password = auth_dict.get("password")
@@ -49,11 +50,12 @@ def login_view(request):
         return Response(status=status.HTTP_200_OK)
     else:
         log.debug("login_view: user not found => 400")
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response("user not found", status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
 def sign_up(request):
+    """Регистрация"""
     if request.method == "POST":
         auth_dict = json.loads(list(request.POST.dict().keys())[0])
         name = auth_dict.get("name")
@@ -63,7 +65,7 @@ def sign_up(request):
 
         if check_user_in_db(username):
             log.debug("sign_up: user in db => 400")
-            return Response("error!", status=status.HTTP_400_BAD_REQUEST)
+            return Response("user is already exists", status=status.HTTP_400_BAD_REQUEST)
 
         create_user_profile(username, password, name)
         log.debug("sign_up: create_user_profile")
@@ -76,9 +78,12 @@ def sign_up(request):
 
 
 class ProfileView(APIView):
+    """Профиль: отображение и редактирование данных"""
+
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
+        """Отображение профиля"""
         user = request.user
         profile = get_profile_from_user(user=user)
         log.debug(f"ProfileView GET: {profile=}")
@@ -86,9 +91,10 @@ class ProfileView(APIView):
             data_serialized = ProfileSerializer(profile).data
             return Response(data_serialized)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("profile not found", status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
+        """Редактирование данных профиля"""
         user = request.user
         instance = get_profile_from_user(user=user)
         log.debug(f"ProfileView POST: profile={instance}")
@@ -98,10 +104,12 @@ class ProfileView(APIView):
             serializer.save()
             return Response(serializer.data)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("profile not found", status=status.HTTP_400_BAD_REQUEST)
 
 
 class PasswordChange(APIView):
+    """Смена пароля"""
+
     def post(self, request):
         user = get_user_from_username(username=request.user.username)
         new_password = request.data.get("password")
@@ -112,10 +120,12 @@ class PasswordChange(APIView):
             user.save()
             return Response(status=status.HTTP_200_OK)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("user or password not found", status=status.HTTP_400_BAD_REQUEST)
 
 
 class AvatarChange(APIView):
+    """Смена аватара"""
+
     def post(self, request):
         profile = get_profile_from_user(request.user)
         log.debug(f"AvatarChange: {profile=}")
@@ -128,7 +138,7 @@ class AvatarChange(APIView):
             # return Response(data_serialized)    # todo check valid response
             return Response(profile.get_avatar())
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("profile not found", status=status.HTTP_400_BAD_REQUEST)
 
 
 # endregion
@@ -137,15 +147,19 @@ class AvatarChange(APIView):
 
 
 class BasketView(APIView):
+    """Корзина"""
+
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
+        """Отображение корзины"""
         products = filter_basket_products_from_user(request.user)
         log.debug(f"BasketView GET: {request.user=} {products=}")
         serializer_data = BasketProductSerializer(products, many=True)
         return Response(serializer_data.data)
 
     def post(self, request):
+        """Добавление товара в корзину"""
         basket = get_basket_from_user(request.user)
         log.debug(f"BasketView POST: {request.user=} {basket=}")
         if not basket:
@@ -168,6 +182,7 @@ class BasketView(APIView):
             return Response(serializer_data.data)
 
     def delete(self, request):
+        """Удаление товара из корзины"""
         product_id = request.data.get("id")
         product_count = request.data.get("count")
         log.debug(f"BasketView DELETE: {product_id=} {product_count}")
@@ -181,9 +196,12 @@ class BasketView(APIView):
 
 
 class OrderView(APIView):
+    """Заказы"""
+
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
+        """Отображение заказов"""
         user = request.user
         order = get_order_by_query({"user": user, "status": Order.StatusOrder.NEW})
         log.debug(f"OrderView GET: {user=} {order=}")
@@ -191,9 +209,10 @@ class OrderView(APIView):
             result = OrderSerializer(order).data
             return Response(result)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("order not found", status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
+        """Создание заказа"""
         log.debug(f"OrderView POST: {request.user=}")
         order = create_order(user=request.user)
         log.debug(f"OrderView POST: {order.id=}")
@@ -201,9 +220,12 @@ class OrderView(APIView):
 
 
 class OrderDetailView(APIView):
+    """Текущий заказ"""
+
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, id_order):
+        """Отображение текущего заказа"""
         order = get_order_by_query({"id": id_order})
         log.debug(f"OrderDetailView GET: {id_order=}; {order=}")
         if order:
@@ -213,6 +235,7 @@ class OrderDetailView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, id_order):
+        """Оформление заказа"""
         log.debug(f"OrderDetailView POST: {id_order=}; {request.data}")
 
         order = get_order_by_query({"id": id_order})
@@ -244,10 +267,12 @@ class OrderDetailView(APIView):
 
             return Response(result)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("order not found", status=status.HTTP_400_BAD_REQUEST)
 
 
 class PaymentView(APIView):
+    """Оплата заказа"""
+
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, id_payment):
@@ -271,7 +296,7 @@ class PaymentView(APIView):
 
             return Response(serializer_data)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("one or more data not found", status=status.HTTP_400_BAD_REQUEST)
 
 
 # endregion

@@ -27,25 +27,25 @@ urlpatterns = [
     path("sign-up/", sign_up, name="register"),
     path("sign-out/", LogoutView.as_view(), name="logout"),
     # ---- catalog ----
-    path("categories/", CategoriesView.as_view()),
-    path("catalog/", CatalogView.as_view()),
-    path("products/popular/", ProductPopularView.as_view()),
-    path("products/limited/", LimitedView.as_view()),
-    path("sales/", SalesView.as_view()),
-    path("banners/", BannersView.as_view()),
+    path("categories/", CategoriesView.as_view(), name="categories"),
+    path("catalog/", CatalogView.as_view(), name="catalog"),
+    path("products/popular/", ProductPopularView.as_view(), name="popular"),
+    path("products/limited/", LimitedView.as_view(), name='limited'),
+    path("sales/", SalesView.as_view(), name='sales'),
+    path("banners/", BannersView.as_view(), name='banners'),
     # ---- basket ----
-    path("basket/", BasketView.as_view()),
+    path("basket/", BasketView.as_view(), name='basket'),
     # ---- orders ----
-    path("orders/", OrderView.as_view()),
+    path("orders/", OrderView.as_view(), name='orders'),
     path("order/<id_order>/", OrderDetailView.as_view()),
     # ---- payment ----
     path("payment/<id_payment>/", PaymentView.as_view()),
     # ---- profile ----
-    path("profile/", ProfileView.as_view()),
+    path("profile/", ProfileView.as_view(), name='profile'),
     path("profile/avatar/", AvatarChange.as_view()),
     path("profile/password/", PasswordChange.as_view()),
     # ---- tags ----
-    path("tags/", TagView.as_view()),
+    path("tags/", TagView.as_view(), name='tags'),
     # ---- product ----
     path("product/<int:pk>/", ProductView.as_view()),
     path("product/<int:id_product>/reviews/", ProductReviewView.as_view()),

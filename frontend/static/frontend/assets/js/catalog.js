@@ -81,8 +81,15 @@ var mix = {
             :  null
 
         if(location.pathname.startsWith('/catalog/')) {
-            const category = location.pathname.replace('/catalog/', '').replace('/', '')
+            const category = location.pathname.replace('/catalog/', '')
             this.category = category.length ? Number(category) : null
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const filterValue = urlParams.get('filter');
+
+        if (filterValue) {
+            this.filter.name = filterValue;
         }
 
         this.getCatalogs()

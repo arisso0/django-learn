@@ -6,6 +6,8 @@ from apps.catalog.models import Product
 
 
 class Profile(models.Model):
+    """Профиль"""
+
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     full_name = models.CharField("Имя", max_length=1000)
@@ -21,6 +23,7 @@ class Profile(models.Model):
         return self.full_name
 
     def get_avatar(self):
+        """Получить аватар, если аватара нет, то берем дефолтный"""
         base_url = "http://127.0.0.1:8000"
         if self.avatar:
             str_url = f"{base_url}{self.avatar.url}"
@@ -44,6 +47,8 @@ class Profile(models.Model):
 
 
 class Basket(models.Model):
+    """Корзина"""
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -58,10 +63,12 @@ class Basket(models.Model):
 
     @property
     def count(self):
+        """Количество товара в корзине"""
         return BasketProduct.objects.filter(basket=self).count()
 
     @property
     def total_price(self):
+        """Итоговая цена товаров в корзине"""
         products = list(
             BasketProduct.objects.filter(basket=self).values_list(
                 "product__price",
@@ -76,6 +83,8 @@ class Basket(models.Model):
 
 
 class BasketProduct(models.Model):
+    """Товары в корзине"""
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     count_product = models.PositiveIntegerField("Количество в корзине")
     basket = models.ForeignKey(Basket, on_delete=models.CASCADE)
@@ -85,11 +94,17 @@ class BasketProduct(models.Model):
 
 
 class Order(models.Model):
+    """Заказ"""
+
     class DeliveryType(models.TextChoices):
+        """Тип доставки"""
+
         DEFAULT = "DEFAULT", "Обычная доставка"
         EXPRESS = "EXPRESS", "Экспресс доставка"
 
     class StatusOrder(models.TextChoices):
+        """Статус заказа"""
+
         NEW = "NEW", "Новый"
         ACCEPT = "ACCEPT", "Принят"
         PAID = "PAID", "Оплачен"
@@ -97,6 +112,8 @@ class Order(models.Model):
         DONE = "DONE", "Доставлен"
 
     class PaymentType(models.TextChoices):
+        """Тип оплаты"""
+
         ONLINE = "ONLINE", "Моя карта"
         SOMEONE = "SOMEONE", "Чужая карта"
 
@@ -132,17 +149,21 @@ class Order(models.Model):
 
     @property
     def fullName(self):
+        """Полное имя покупателя"""
         return Profile.objects.get(user=self.user).full_name
 
     @property
     def email(self):
+        """email покупателя"""
         return Profile.objects.get(user=self.user).email
 
     @property
     def phone(self):
+        """Телефон покупателя"""
         return Profile.objects.get(user=self.user).phone
 
     def get_products(self):
+        """Список товаров в корзине"""
         products = list(OrderProduct.objects.filter(order=self))
         result = []
         for i in products:
@@ -170,6 +191,8 @@ class Order(models.Model):
 
 
 class OrderProduct(models.Model):
+    """Товары в заказе"""
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     count_product = models.PositiveIntegerField("Количество в заказе")
@@ -179,6 +202,8 @@ class OrderProduct(models.Model):
 
 
 class Payment(models.Model):
+    """Платежная информация"""
+
     order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name="Заказ")
     number = models.CharField("Номер", max_length=16)
     name = models.CharField("Имя держателя", max_length=1000)

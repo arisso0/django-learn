@@ -1,5 +1,8 @@
 def get_catalog_filter(data: dict) -> tuple:
-    """Получить фильтр для каталога из словаря"""
+    """
+    Получить фильтр для каталога из словаря
+    :param data: набор фильтров из request
+    """
     free_d = False if data.get("filter[freeDelivery]") == "false" else True
     available = False if data.get("filter[available]") == "false" else True
 

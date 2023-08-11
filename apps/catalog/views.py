@@ -30,11 +30,15 @@ log = logging.getLogger(__name__)
 
 
 class CategoriesView(generics.ListAPIView):
+    """Вывод категорий и подкатегорий для меню"""
+
     serializer_class = CategoriesSerializer
     queryset = filter_catalog(query_lookups={"parent": None}, order_by="id")
 
 
 class CatalogView(APIView):
+    """Вывод товаров на странице каталога"""
+
     def get(self, request):
         query_lookups, order_by = get_catalog_filter(request.GET)
         products = filter_products(query_lookups, order_by)
@@ -60,6 +64,8 @@ class CatalogView(APIView):
 
 
 class TagView(APIView):
+    """Вывод тегов на странице каталога"""
+
     def get(self, request):
         category_id = request.GET.get("category")
         tags = filter_tags(category_id)
@@ -68,11 +74,15 @@ class TagView(APIView):
 
 
 class ProductView(generics.RetrieveAPIView):
+    """Детальная страница товара"""
+
     queryset = get_all_products()
     serializer_class = ProductDetailSerializer
 
 
 class ProductReviewView(APIView):
+    """Добавление отзыва к продукту"""
+
     def post(self, request, id_product):
         product = get_product_by_id(id_product)
         log.debug(f"ProductReviewView: {id_product=} {product=}")
@@ -94,6 +104,8 @@ class ProductReviewView(APIView):
 
 
 class ProductPopularView(generics.ListAPIView):
+    """Отображение популярных товаров"""
+
     serializer_class = ProductCatalogSerializer
 
     def get_queryset(self):
@@ -101,6 +113,8 @@ class ProductPopularView(generics.ListAPIView):
 
 
 class SalesView(APIView):
+    """Отображение товаров по распродаже"""
+
     def get(self, request):
         sales = filter_sales({"date_from__lte": datetime.now(), "date_to__gte": datetime.now()})
 
@@ -119,11 +133,15 @@ class SalesView(APIView):
 
 
 class BannersView(generics.ListAPIView):
+    """Отображение товаров на баннере"""
+
     product_ids = get_ids_product_in_banners()
     queryset = filter_products({"id__in": product_ids})
     serializer_class = ProductCatalogSerializer
 
 
 class LimitedView(generics.ListAPIView):
+    """Отображение лимитированных товаров"""
+
     serializer_class = ProductCatalogSerializer
     queryset = filter_products({"is_limited": True})

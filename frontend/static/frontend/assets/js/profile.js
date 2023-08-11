@@ -41,8 +41,14 @@ var mix = {
                 alert('В форме присутствуют незаполненные поля или пароли не совпадают')
                 return
             }
-            this.postData('/api/profile/password/')
-              .then(({data}) => {
+            const payload = {
+                passwordCurrent: this.passwordCurrent,
+                password: this.password,
+                passwordReply: this.passwordReply
+            };
+
+            this.postData('/api/profile/password/', payload)
+              .then(() => {
                    alert('Успешно сохранено')
                     this.passwordCurrent = ''
                     this.password = ''

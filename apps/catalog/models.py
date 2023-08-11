@@ -2,6 +2,8 @@ from django.db import models
 
 
 class Catalog(models.Model):
+    """Каталог"""
+
     name = models.CharField("Название", max_length=2000)
     parent = models.ForeignKey(
         "self",
@@ -19,6 +21,7 @@ class Catalog(models.Model):
         return self.name
 
     def get_subcategories(self):
+        """Получить подкатегории категории"""
         res = []
         subcategories = Catalog.objects.filter(parent=self)
         if subcategories:
@@ -36,6 +39,7 @@ class Catalog(models.Model):
         return res
 
     def get_image(self):
+        """Получить картинки каталога"""
         return {
             "src": self.image.url,
             "alt": self.image.name,
@@ -47,6 +51,8 @@ class Catalog(models.Model):
 
 
 class Tag(models.Model):
+    """Теги"""
+
     name = models.CharField("Название", max_length=2000)
     category = models.ManyToManyField(Catalog, verbose_name="Категория")
 
@@ -62,6 +68,8 @@ class Tag(models.Model):
 
 
 class Product(models.Model):
+    """Товар"""
+
     category = models.ForeignKey(Catalog, on_delete=models.CASCADE, verbose_name="Категория")
     price = models.DecimalField("Цена", max_digits=10, decimal_places=2)
     name = models.CharField("Название", max_length=2000)
@@ -81,11 +89,13 @@ class Product(models.Model):
 
     @property
     def reviews_count(self):
+        """Количество отзывов на товар"""
         reviews = Review.objects.filter(product=self)
         return reviews.count()
 
     @property
     def rating(self):
+        """Средняя оценка товара"""
         rates = list(Review.objects.filter(product=self).values_list("rate", flat=True))
         if rates:
             return round(sum(rates) / len(rates), 2)
@@ -93,6 +103,7 @@ class Product(models.Model):
             return 0
 
     def get_tags(self):
+        """Получить теги товара"""
         res = []
         tags = self.tags.all()
         for tag in tags:
@@ -100,6 +111,7 @@ class Product(models.Model):
         return res
 
     def get_images(self):
+        """Получить картинки товара"""
         res = []
         images = Image.objects.filter(product=self)
         if images:
@@ -108,6 +120,7 @@ class Product(models.Model):
         return res
 
     def get_reviews(self):
+        """Получить отзывы товара"""
         reviews = Review.objects.filter(product=self)
         res = []
         if reviews:
@@ -124,6 +137,7 @@ class Product(models.Model):
         return res
 
     def get_specifications(self):
+        """Получить характеристики товара"""
         specs = SpecificationProduct.objects.filter(product=self)
         res = []
         if specs:
@@ -137,6 +151,8 @@ class Product(models.Model):
 
 
 class Specification(models.Model):
+    """Характеристика"""
+
     name = models.CharField("Название", max_length=2000)
 
     updated = models.DateTimeField("Обновлено", auto_now=True)
@@ -151,6 +167,8 @@ class Specification(models.Model):
 
 
 class SpecificationProduct(models.Model):
+    """Значения характеристики для товара"""
+
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
@@ -177,6 +195,8 @@ class SpecificationProduct(models.Model):
 
 
 class Review(models.Model):
+    """Отзывы"""
+
     author = models.CharField("Автор", max_length=2000)
     email = models.EmailField("Email", max_length=200)
     text = models.CharField("Текст отзыва", max_length=2000)
@@ -195,6 +215,8 @@ class Review(models.Model):
 
 
 class Image(models.Model):
+    """Картинки для товара"""
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     src = models.ImageField()
 
@@ -203,6 +225,8 @@ class Image(models.Model):
 
 
 class Banner(models.Model):
+    """Баннер"""
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Товар")
 
     updated = models.DateTimeField("Обновлено", auto_now=True)
@@ -217,6 +241,8 @@ class Banner(models.Model):
 
 
 class Sales(models.Model):
+    """Распродажа"""
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Товар")
     sale_price = models.FloatField("Цена товара по скидке")
     date_from = models.DateField("Дата начала действия акционной цены")

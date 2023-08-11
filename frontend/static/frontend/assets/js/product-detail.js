@@ -31,9 +31,15 @@ var mix = {
                 author: this.review.author,
                 email: this.review.email,
                 text: this.review.text,
-                rate: this.review.rate
+                rate: this.review.rate,
+                product: this.product.id
             }).then(({data}) => {
-                this.product.reviews = data
+                const review = data;
+                if (!this.product.reviews) {
+                this.product.reviews = [review];
+                } else {
+                this.product.reviews.push(review);
+                }
                 alert('Отзыв опубликован')
                 this.review.author = ''
                 this.review.email = ''

@@ -26,8 +26,13 @@ var mix = {
 			if (this.orderId !== null) {
 				this.postData(`/api/order/${this.orderId}/`, { ...this })
 					.then(({ data: { orderId } }) => {
-						alert('Заказ подтвержден')
-						location.replace(`/payment/${orderId}/`)
+						alert('Заказ подтвержден');
+						if (this.paymentType === 'someone') {
+							location.replace(`/payment-someone/${orderId}`);
+						}
+						else {
+							location.replace(`/payment/${orderId}`);
+						}
 					})
 					.catch(() => {
 						console.warn('Ошибка при подтверждения заказа')
@@ -50,6 +55,11 @@ var mix = {
 		if(location.pathname.startsWith('/orders/')) {
 			const orderId = location.pathname.replace('/orders/', '').replace('/', '')
 			this.orderId = orderId.length ? Number(orderId) : null
+			this.getOrder(this.orderId);
+		}
+		if (location.pathname.startsWith('/order-detail/')) {
+			const orderId = location.pathname.replace('/order-detail/', '').replace('/', '');
+			this.orderId = orderId.length ? Number(orderId) : null;
 			this.getOrder(this.orderId);
 		}
 	},

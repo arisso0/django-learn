@@ -19,20 +19,45 @@
     </div>
     <div class="Section">
       <div class="wrap">
-        <form class="form Payment" action="#" method="post">
+        <div class="ProgressPayment" v-if="showSpinner">
+          <div class="ProgressPayment-title">Ждем подтверждения оплаты платежной системой
+          </div>
+          <div class="ProgressPayment-icon">
+            <div class="cssload-thecube">
+              <div class="cssload-cube cssload-c1"></div>
+              <div class="cssload-cube cssload-c2"></div>
+              <div class="cssload-cube cssload-c4"></div>
+              <div class="cssload-cube cssload-c3"></div>
+            </div>
+          </div>
+        </div>
+        <div class="PaymentForm" v-if="!showSpinner">
+        <form class="form Payment" @submit.prevent="submitPayment">
           <div class="Payment-card">
             <div class="form-group">
               <label class="form-label">Номер счета
               </label>
-              <input class="form-input Payment-bill" id="numero1" name="numero1" type="text" placeholder="9999 9999" data-mask="9999 9999" data-validate="require pay"/>
+              <input class="form-input Payment-bill"
+                         id="number"
+                         name="number"
+                         type="text"
+                         placeholder="9999 9999 9999 9999"
+                         mask="'9999 9999 9999 9999'"
+                         v-model="number"
+                         data-validate="require pay" />
             </div>
-            <div class="form-group"><a class="btn btn_success Payment-generate" href="#">Сгенирировать случайный счет</a>
+            <div class="form-group"><a class="btn btn_success" href="#" @click="generateRandomNumber">Сгенирировать случайный счет</a>
             </div>
           </div>
-          <div class="Payment-pay"><a class="btn btn_primary" href="progressPayment.html">Оплатить</a>
+          <div class="Payment-pay">
+            <button class="btn btn_primary" type="submit">Оплатить</button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   </div>
+{% endblock %}
+{% block mixins %}
+<script src="{% static 'frontend/assets/js/payment-someone.js' %}"></script>
 {% endblock %}

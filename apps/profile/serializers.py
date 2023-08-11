@@ -7,6 +7,8 @@ from apps.profile.models import Profile
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    """Сериалайзер для профиля"""
+
     fullName = serializers.CharField(source="full_name")
     avatar = serializers.DictField(source="get_avatar", read_only=True)
 
@@ -24,12 +26,16 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class PaymentSerialiser(serializers.ModelSerializer):
+    """Сериалайзер для платежной информации"""
+
     class Meta:
         model = Payment
         fields = ["number", "name", "month", "year", "code"]
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    """Сериалайзер для заказа"""
+
     orderId = serializers.IntegerField(source="id")
     createdAt = serializers.DateTimeField(source="created")
     deliveryType = serializers.CharField(source="delivery_type")
@@ -57,6 +63,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class BasketProductSerializer(serializers.ModelSerializer):
+    """Сериалайзер для корзины"""
+
     count = serializers.IntegerField(source="count_product")
     id = serializers.IntegerField(source="product.id")
     category = serializers.PrimaryKeyRelatedField(source="product.category_id", read_only=True)
@@ -73,7 +81,6 @@ class BasketProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasketProduct
         fields = [
-            # "orderId",
             "id",
             "category",
             "price",

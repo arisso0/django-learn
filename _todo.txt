@@ -1,3 +1,0 @@
-add logs
-add docker
-add tests

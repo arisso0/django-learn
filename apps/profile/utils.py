@@ -14,7 +14,10 @@ from apps.profile.services import get_products_ids_from_basket_products
 
 
 def check_user_in_db(username: str) -> bool:
-    """Проверить есть ли такой юзернейм в БД"""
+    """
+    Проверить есть ли такой юзернейм в БД
+    :param username: юзернейм
+    """
     if username in get_all_username():
         return True
     else:
@@ -22,7 +25,11 @@ def check_user_in_db(username: str) -> bool:
 
 
 def get_image_from_request(request: requests.Request, profile_id: int) -> ContentFile:
-    """Получить картинку из request"""
+    """
+    Получить картинку из request
+    :param request: реквест из запроса
+    :param profile_id: ID профиля
+    """
     img_io = BytesIO()
     original_image = Image.open(request.data.get("avatar"))
     rgb_im = original_image.convert("RGB")
@@ -32,7 +39,12 @@ def get_image_from_request(request: requests.Request, profile_id: int) -> Conten
 
 
 def add_product_to_basket(product_id: int, product_count: int, basket) -> None | str:
-    """Добавить товар в корзину"""
+    """
+    Добавить товар в корзину
+    :param product_id: ID товара
+    :param product_count: количество товара
+    :param basket: корзина (объект)
+    """
     product = get_product_by_id(product_id)
 
     # проверка возможности добавления товара в корзину
@@ -55,7 +67,12 @@ def add_product_to_basket(product_id: int, product_count: int, basket) -> None |
 
 
 def delete_product_from_basket(user: User, product_id: int, product_count: int) -> None | str:
-    """Удалить товар из корзины"""
+    """
+    Удалить товар из корзины
+    :param user: полозователь
+    :param product_id: ID товара
+    :param product_count: количество товара
+    """
     exist_bp = get_basket_product_from_query({"basket__user": user, "product__id": product_id})
     if exist_bp.count_product - product_count > 0:
         exist_bp.count_product -= product_count

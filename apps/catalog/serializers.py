@@ -8,6 +8,8 @@ from apps.catalog.models import Tag
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
+    """Сериалайзер для каталога: вывод категорий и подкатегорий для меню"""
+
     title = serializers.CharField(source="name")
     image = serializers.DictField(source="get_image")
     subcategories = serializers.ListField(source="get_subcategories")
@@ -19,12 +21,16 @@ class CategoriesSerializer(serializers.ModelSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
+    """Сериалайзер для тегов: вывод тегов"""
+
     class Meta:
         model = Tag
         fields = ["id", "name"]
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
+    """Сериалайзер для детального отображения товара (страница товара)"""
+
     count = serializers.IntegerField(source="count_product")
     date = serializers.CharField(source="created")
     title = serializers.CharField(source="name")
@@ -57,6 +63,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
 
 class ProductCatalogSerializer(serializers.ModelSerializer):
+    """Сериалайзер для товара: карточка товара на странице каталога"""
+
     count = serializers.IntegerField(source="count_product")
     category = serializers.PrimaryKeyRelatedField(source="category_id", read_only=True)
     date = serializers.CharField(source="created")
@@ -86,6 +94,8 @@ class ProductCatalogSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """Сериалайзер для отзывов: вывод отзывов на странице товара"""
+
     date = serializers.CharField(source="created")
 
     class Meta:
@@ -100,6 +110,8 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class SalesSerializer(serializers.ModelSerializer):
+    """Сериалайзер для раздела распродажи"""
+
     price = serializers.CharField(source="product.price")
     salePrice = serializers.CharField(source="sale_price")
     dateFrom = serializers.CharField(source="valid_date_from")
